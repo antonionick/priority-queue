@@ -15,10 +15,10 @@ class Node {
 		// add child in current node and add to child link of current node
 		if (this.left === null) {
 			this.left = node;
-			this.left.parent = this;
+			node.parent = this;
 		} else if (this.right === null) {
 			this.right = node;
-			this.right.parent = this;
+			node.parent = this;
 		}
 	}
 
