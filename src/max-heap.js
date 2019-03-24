@@ -14,7 +14,17 @@ class MaxHeap {
 	}
 
 	pop() {
-		this.count--;
+		if (this.isEmpty()) {
+			return;
+		}
+
+		let result = this.root.data;
+		let detached = this.detachRoot();
+		if (this.parentNodes.length > 0) {
+			this.restoreRootFromLastInsertedNode(detached);
+			this.shiftNodeDown(this.root);
+		}
+		return result;
 	}
 
 	detachRoot() {
@@ -41,9 +51,10 @@ class MaxHeap {
 		last.appendChild(detached.right);
 		// define last like first element
 		this.root = last;
-		this.parentNodes = [];
 		// create parentNodes
+		this.parentNodes = [];
 		this._createInsertedArray(this.root);
+		this._topRoot();
 	}
 
 	size() {
@@ -103,16 +114,40 @@ class MaxHeap {
 
 	shiftNodeDown(node) {
 		if (node.left === null && node.right === null) {
-			return;
+			return node.parent;
+		}
+
+		let swap = false;
+
+		if (node.left !== null && node.right !== null) {
+			if (node.left.priority < node.right.priority) {
+				swap = true;
+				this._swapChild(node, node.left, node.right);
+			}
 		}
 
 		if (node.left !== null && node.left.priority > node.priority) {
 			node.left.swapWithParent();
+			node = this.shiftNodeDown(node);
 		}
 
 		if (node.right !== null && node.right.priority > node.priority) {
 			node.right.swapWithParent();
+			node = this.shiftNodeDown(node);
 		}
+
+		if (swap) {
+			this._swapChild(node, node.left, node.right);
+		}
+
+		if (node.parent !== null) {
+			return node.parent;
+		}
+
+		this.parentNodes = [];
+		this._createInsertedArray(node);
+		this._topRoot();
+		return node;
 	}
 
 	_createInsertedArray(current) {
@@ -143,6 +178,13 @@ class MaxHeap {
 		this._createInsertedArray(current.right);
 	}
 
+	_swapChild(parent, left, right) {
+		parent.removeChild(right);
+		parent.removeChild(left);
+		parent.appendChild(right);
+		parent.appendChild(left);
+	}
+
 	// search top root
 	_topRoot() {
 		while (this.root.parent !== null) {
@@ -152,18 +194,3 @@ class MaxHeap {
 }
 
 module.exports = MaxHeap;
-
-
-/*let h = new MaxHeap();
-h.push(42, 15);
-h.push(14, 32);
-h.push(0, 0);
-h.push(14, 14);
-h.push(13, 13);
-h.push(16, 16);
-h.push(12, 12);
-
-const detached = h.detachRoot();
-h.restoreRootFromLastInsertedNode(detached);*/
-
-//[16,14,13,0]
