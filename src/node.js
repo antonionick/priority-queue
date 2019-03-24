@@ -8,7 +8,7 @@ class Node {
 	}
 
 	appendChild(node) {
-		if (node === null) {
+		if (node === null || node === undefined) {
 			return;
 		}
 
