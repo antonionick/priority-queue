@@ -53,33 +53,40 @@ class Node {
 			return;
 		}
 
-		let futureParent = this.parent.parent;
+		let futureParent = this.parent.parent || null;
 		let parent = this.parent;
 
 		// if node has sibling, remove the sibling from parent element and return the sibling
-		let sibling = this._swapParentChildren(parent);
+		// if in parent element is left, variable left is true, else false
+		let [sibling, left] = this._defineChildrenForParent(parent);
 		// add to parent element children of current node and delete they from current node
-		this._defineChildrenForParent(parent);
+		this._swapParentChildren(parent);
 
 		// swap
-		if (futureParent === null) {
-			// if parent is the root of the graph
-			this.appendChild(parent);
-		} else {
+		if (futureParent !== null) {
 			futureParent.removeChild(parent);
 			futureParent.appendChild(this);
+		}
+
+		// if left, first add parent in element, else first add sibling in element
+		if (left) {
+			this.appendChild(parent);
+			this.appendChild(sibling);
+		} else {
+			this.appendChild(sibling);
 			this.appendChild(parent);
 		}
-		this.appendChild(sibling);
 	}
 
-	_swapParentChildren(parent) {
+	_defineChildrenForParent(parent) {
 		// suggest sibling it's the right child
 		let sibling = parent.right;
+		let left = true;
 
 		// if this element is the right child, sibling it's the left child
 		if (parent.right === this) {
 			sibling = parent.left;
+			left = false;
 		}
 		// delete children from parent
 		if (sibling !== null) {
@@ -87,10 +94,11 @@ class Node {
 		}
 		parent.removeChild(this);
 
-		return sibling;
+		return [sibling, left];
+
 	}
 
-	_defineChildrenForParent(parent) {
+	_swapParentChildren(parent) {
 		// add to parent element children of current node and delete they from current node
 		let leftChild = this.left;
 		let rightChild = this.right;
