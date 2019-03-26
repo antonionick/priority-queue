@@ -18,6 +18,8 @@ class MaxHeap {
 		if (this.isEmpty()) {
 			return;
 		}
+		// search top element of graph and assign top element like root
+		this._topRoot();
 
 		let result = this.root.data;
 		// define detached root
@@ -26,7 +28,7 @@ class MaxHeap {
 		if (this.parentNodes.length > 0) {
 			// define last added element like root of graph
 			this.restoreRootFromLastInsertedNode(detached);
-			//
+			// sort the graph to the top was the smallest element
 			this.shiftNodeDown(this.root);
 		}
 		return result;
@@ -34,7 +36,7 @@ class MaxHeap {
 
 	// remove root of graph and return removed root
 	detachRoot() {
-		// go to the graph top
+		// search top element of graph and assign top element like root
 		this._topRoot();
 
 		let result = this.root;
@@ -61,7 +63,6 @@ class MaxHeap {
 		// create parentNodes
 		this.parentNodes = [];
 		this._createInsertedArray(this.root);
-		this._topRoot();
 	}
 
 	size() {
